@@ -1,0 +1,29 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+
+<div id="profile-view"></div>
+
+{% if request.user.id %}
+    
+<div id="new_post">
+
+    <h4> New Post </h4>
+    <form  method="POST">
+        {% csrf_token %}
+        <textarea name="content" id="content" cols="90" rows="3"></textarea>
+        <input type="submit" id="post" value="Post">
+    </form>
+</div>
+{% endif %}
+
+<div id="all_posts-view">
+
+</div>
+
+<script src="{% static 'network/post.js' %}"> </script>
+
+
+{% endblock %}

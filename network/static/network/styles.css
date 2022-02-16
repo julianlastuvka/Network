@@ -1,0 +1,43 @@
+#new_post, #profile-view{
+    margin: 25px;
+}
+
+.post_container{
+    margin: 20px;
+    border: 1px black solid;
+    border-radius: 5px;
+    padding: 10px;
+    padding-bottom: 2px;
+    width: 50%;
+    height: auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.timestamp{
+    position: absolute;
+    bottom: -15px;
+    right: 10px;
+    color: rgb(104, 102, 102);
+}
+
+.post_container div img{
+    margin-bottom: 2px;
+}
+
+
+.profile{
+    border: 1px black solid;
+    background-color: rgba(100, 148, 237, 0.493);
+    margin: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    width: 20%;
+    text-align: center;
+    align-self: center;
+    font-family: Monospace ;
+}
+
+.post_container h5{
+    cursor: pointer;
+}
