@@ -99,14 +99,31 @@ def post(request):
 
 
 
-def load_posts(request):
+def all_posts(request):
 
     if request.method == "GET":
         posts = Post.objects.filter()
         return JsonResponse([post.serialize() for post in posts], safe=False)
 
     else:
-        return JsonResponse({"error": "POST request required."}, status=400)
+        return JsonResponse({"error": "GET request required."}, status=400)
+
+
+def follows_posts(request):
+
+    if request.method == "GET":
+
+            user = User.objects.get(pk=request.user.id)
+
+            follows  = [object.followed_user for object in user.follows.all()]
+
+            posts = Post.objects.filter(owner__in = follows)
+
+            return JsonResponse([post.serialize() for post in posts], safe=False)
+
+    else:
+        return JsonResponse({"error": "GET request required."}, status=400)
+
 
 
 def follow(request, username):

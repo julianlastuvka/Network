@@ -87,7 +87,7 @@ function show_post(post){
 
 function load_posts(){
 
-    fetch("/posts")
+    fetch("/all_posts")
     .then( response => response.json())
     .then(posts => {
 
@@ -96,6 +96,26 @@ function load_posts(){
         });
         
     })
+
+}
+
+function load_follows_posts(){
+
+    document.querySelector('#profile-view').innerHTML = "";
+    document.querySelector('#new_post').innerHTML = "";
+    document.querySelector('#all_posts-view').innerHTML = "";
+    
+    fetch("/follows_posts")
+    .then( response => response.json())
+    .then(posts => {
+
+        posts.forEach(post => {
+            show_post(post);
+        });
+        
+    }) 
+
+    
 
 }
 
@@ -254,16 +274,6 @@ function is_follower(user, followers){
     return false
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{
-
-    if(document.querySelector('#new_post')){
-        document.querySelector('#new_post').onsubmit = post;
-    }
-   
-    load_posts();
-
-});
-
 
 function like_post(post_id){
 
@@ -286,6 +296,19 @@ function like_post(post_id){
     });
 
     return false;
-
-
 }
+
+
+document.addEventListener('DOMContentLoaded', ()=>{
+
+    if(document.querySelector('#new_post')){
+        document.querySelector('#new_post').onsubmit = post;
+    }
+
+    if (document.querySelector("#following")){
+        document.querySelector("#following").onclick = load_follows_posts;
+    }
+    
+    load_posts();
+
+});
