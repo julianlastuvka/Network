@@ -56,34 +56,96 @@ function show_post(post){
     const post_user = document.createElement('h5');
     const post_content = document.createElement('p');
     const timestamp = document.createElement('p');
-    const likes = document.createElement('div');
+    const likes_container = document.createElement('div');
     const likes_icon = document.createElement('img');
-    
+    const likes = document.createElement('div');
 
+
+    likes_icon.classList.add("likes_icon");
+    likes_container.classList.add("likes_container");
     likes_icon.setAttribute("src", "/static/network/likes.png");
-    likes_icon.setAttribute("width", "20px");
+    likes_icon.addEventListener("click", () => like_post(post.id, likes));
     
     timestamp.classList.add('timestamp');
 
+    post_user.classList.add('button-81');
+
     post_user.innerHTML = `@${post.owner}:`;
-    post_content.innerHTML = post.content;
+    post_content.innerText = post.content;
     timestamp.innerHTML = post.timestamp;
-    likes.innerHTML = post.likes + " ";
-    
+    likes.innerText = post.likes + " ";
+
+
+    if(post.owner == document.getElementById('user_username').innerText){
+        const edit_button = document.createElement('button');
+        edit_button.innerText = "Edit";
+        edit_button.classList.add('button-30');
+        post_container.appendChild(edit_button);
+
+        edit_button.addEventListener('click', () =>{
+
+            edit_button.style.display="none";
+            const text_area = document.createElement("textarea");
+            text_area.innerText = post_content.innerText;
+            post_content.innerText = "";
+            post_content.appendChild(text_area);
+
+            const save_changes = document.createElement("button");
+            save_changes.classList.add("button-30");
+            save_changes.innerText = "Save";
+            post_content.appendChild(save_changes);
+
+            save_changes.addEventListener("click", ()=>{
+                post_content.innerText = text_area.value;
+                text_area.remove();
+                edit_button.style.display="block";
+
+                edit_post(post.id, post_content.innerText);
+
+            })
+            
+        } )
+    }
 
     post_container.appendChild(post_user);
     post_container.appendChild(post_content);
     post_container.appendChild(timestamp);
-    post_container.appendChild(likes);
-    
-    likes.appendChild(likes_icon);
+    post_container.appendChild(likes_container);
 
+    likes_container.appendChild(likes_icon);
+    likes_container.appendChild(likes);
+    
     
     document.querySelector('#all_posts-view').prepend(post_container);
 
     post_user.addEventListener('click', () => load_profile(post.owner));
 
 }
+
+function edit_post(post_id, new_content){
+
+    const csrftoken = getCookie('csrftoken');
+    
+    fetch('/edit_post', {
+
+        method: 'POST',
+        headers: {
+                "X-CSRFToken": csrftoken,
+            },
+        body: JSON.stringify({
+            post_id: post_id,
+            new_content: new_content
+        })
+        
+    })
+    .then(response => response.json())
+    .then(response =>{
+
+        console.log(response);
+    });
+
+}
+
 
 function load_posts(){
 
@@ -115,9 +177,8 @@ function load_follows_posts(){
         
     }) 
 
-    
-
 }
+
 
 function load_profile(username){
 
@@ -205,6 +266,7 @@ function show_profile(user_info){
 
     profile = document.createElement("div");
     profile.classList.add("profile");
+    profile.classList.add("twelve");
 
     const username = document.createElement('h3');
     const follows = document.createElement('div');
@@ -214,8 +276,6 @@ function show_profile(user_info){
     
 
     followers.id = 'followers';
-
-    
 
     username.innerText = user_info.username;
     followers.innerText = `Followers: ${user_info.followers.length}`;
@@ -275,10 +335,11 @@ function is_follower(user, followers){
 }
 
 
-function like_post(post_id){
+function like_post(post_id, likes_count){
 
+    const csrftoken = getCookie('csrftoken');
     
-    fetch('/like_post', {
+    fetch(`/like_post`, {
 
         method: 'POST',
         headers: {
@@ -293,9 +354,30 @@ function like_post(post_id){
     .then(response =>{
 
         console.log(response);
+
+        if ( response.success == "post liked"){
+            var liked = true;
+        } else {
+            var liked = false;
+        }
+
+        change_post_like_count(likes_count, liked);
     });
 
     return false;
+}
+
+function change_post_like_count(likes_count, liked){
+
+    current_likes = parseInt(likes_count.innerText);
+    likes_count.innerText = "";
+
+    if(liked){
+        likes_count.innerText = current_likes + 1;
+    } else{
+        likes_count.innerText = current_likes - 1 ;
+    }
+    
 }
 
 

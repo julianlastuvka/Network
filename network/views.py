@@ -1,4 +1,5 @@
 import email
+from re import X
 from urllib.request import Request
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -181,9 +182,54 @@ def user_info(request, username):
 
 
 
-def like_post(request, username):
+def like_post(request):
 
     if request.method == "POST":
 
+        data = json.loads(request.body)
 
-        return False
+        post_id = data["post_id"]
+
+        user = User.objects.get(pk=request.user.id)
+        post = Post.objects.get(pk=post_id)
+        post_like = PostLike.objects.filter(post=post_id, user=user)
+
+        # if the user already liked the post, dislike it.
+        if post_like:
+            post_like.delete()
+
+            return JsonResponse({"success": "post unliked"}, status=201)
+
+        else:
+            post_like = PostLike(
+                user=user,
+                post = post      
+            )
+
+            post_like.save()
+
+            return JsonResponse({"success": "post liked"}, status=201)
+
+
+
+def edit_post(request):
+
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+
+        post_id = data["post_id"]
+        new_content =  data["new_content"]
+
+        post = Post.objects.get(pk=post_id)
+
+        if post.owner.id != request.user.id:
+            return JsonResponse({"failure": "this post doesn't belong to the logged user."}, status=400)
+
+        post.content = new_content
+        post.save()
+
+        return JsonResponse({"success": "post updated"}, status=201)
+
+
+    return JsonResponse({"error": "POST request required."}, status=400)
