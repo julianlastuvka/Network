@@ -2,6 +2,19 @@ textarea {
     resize: none;
   }
 
+  body{
+      width: 100%;
+  }
+
+.rainbow-text {
+    
+    background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);   
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 30px;
+      
+}
+
 #new_post, #profile-view{
     margin: 25px;
 }
@@ -10,7 +23,7 @@ textarea {
     margin: 20px;
     margin-bottom: 30px;
     border-radius: 5px;
-    padding: 25px;
+    padding-bottom: 40px;
     padding-left: 10px;
     width: 55%;
     height: auto;
@@ -22,6 +35,12 @@ textarea {
 .post_container textarea{
     width: 85%;
     height: 8rem;
+}
+
+
+#post{
+    margin-left: 10px;
+    margin-bottom: 0px;
 }
 
 .timestamp{
@@ -54,7 +73,6 @@ textarea {
 
 .post_container h5{
     cursor: pointer;
-    
 }
 
 .likes_container{
@@ -78,6 +96,25 @@ textarea {
     width: 25px;
 }
 
+#paginator{
+    display: flex;
+    padding: 10px;
+    padding-bottom:25px;
+    width: 25%;
+    justify-content: space-around;
+}
+
+#page_counter{
+    cursor:default;
+}
+
+textarea{
+    
+    border-bottom: 1px solid #f48fb1;
+    box-shadow: 0 1px 0 0 #f48fb1;
+    border-radius: 7px;
+      
+}
 
 
 /* button-30 copied from https://getcssscan.com/css-buttons-examples, made by Algolia   */
@@ -177,4 +214,55 @@ textarea {
     margin-bottom: 15px;
     margin-left: 25px;
     padding: 5px;
+}
+
+
+@media screen and (max-width: 1100px){
+
+    * {
+        font-size: 25px;
+    }
+
+    .post_container{
+        width: 95%;
+        padding-bottom: 50px;
+        padding-top: 50px;
+    }
+
+    .post_container p, .post_container h5{
+        font-size: 35px;
+    }
+
+    #new_post textarea{
+        width: 80%;
+        margin-left: 10px;
+    }
+
+    .button-30{
+        font-size: 32px;
+        height: 45px;
+    }
+
+    .post_container .timestamp{
+        font-size: 30px;
+    }
+    
+
+    .likes_container{
+        
+        width: 48px;
+        font-size: 110%;
+        position: absolute;
+        bottom: 5px;
+        left: 20px;
+    }
+    
+    .likes_icon{
+        width: 30px;
+    }
+    
+    .likes_icon:hover{
+        width: 25px;
+    }
+
 }

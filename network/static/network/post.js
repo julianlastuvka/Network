@@ -116,7 +116,7 @@ function show_post(post){
     likes_container.appendChild(likes);
     
     
-    document.querySelector('#all_posts-view').prepend(post_container);
+    document.querySelector('#all_posts-view').append(post_container);
 
     post_user.addEventListener('click', () => load_profile(post.owner));
 
@@ -147,36 +147,86 @@ function edit_post(post_id, new_content){
 }
 
 
-function load_posts(){
+function load_all_posts(page_number){
 
-    fetch("/all_posts")
+    document.querySelector('#profile-view').innerHTML = "";
+    //document.querySelector('#new_post').innerHTML = "";
+    document.querySelector('#all_posts-view').innerHTML = "";
+
+    fetch(`/all_posts/${page_number}`)
     .then( response => response.json())
-    .then(posts => {
+    .then(response => {
 
-        posts.forEach(post => {
+        response["posts"].forEach(post => {
             show_post(post);
         });
         
+        create_paginator(response["max_pages"], page_number, load_all_posts);
     })
 
 }
 
-function load_follows_posts(){
+function load_follows_posts(page_number){
 
     document.querySelector('#profile-view').innerHTML = "";
     document.querySelector('#new_post').innerHTML = "";
     document.querySelector('#all_posts-view').innerHTML = "";
     
-    fetch("/follows_posts")
+    fetch(`/follows_posts/${page_number}`)
     .then( response => response.json())
-    .then(posts => {
+    .then(response => {
 
-        posts.forEach(post => {
+        response["posts"].forEach(post => {
             show_post(post);
         });
         
+        create_paginator(response["max_pages"], page_number, load_follows_posts);
+        
     }) 
 
+}
+
+
+function create_paginator(max_pages, page_number, load_function){
+
+    paginator = document.createElement('div');     
+    paginator.id = 'paginator';   
+
+
+    // PREVIOUS BUTTON
+    previous = document.createElement('button');
+    previous.innerText = "Previous"
+    previous.classList.add('button-81');
+    paginator.appendChild(previous);
+    previous.style.visibility = "hidden";
+
+    if (page_number > 1){
+        previous.addEventListener('click',()=> load_function(page_number - 1));
+        previous.style.visibility = "visible";
+        
+    }
+
+    // PAGE COUNTER 
+    page_counter = document.createElement('button');
+    page_counter.innerText = `<Page ${page_number} of ${max_pages}>`
+    paginator.appendChild(page_counter);
+    page_counter.classList.add('button-81');
+    page_counter.id = "page_counter";
+
+
+    // NEXT BUTTON
+    next = document.createElement('button');
+    next.innerText = "Next";
+    next.classList.add('button-81');
+    paginator.appendChild(next);
+    next.style.visibility = "hidden";
+
+    if(page_number < max_pages){
+        next.addEventListener('click', ()=> load_function(page_number + 1));
+        next.style.visibility = "visible";
+    }
+    
+    document.querySelector('#all_posts-view').appendChild(paginator);
 }
 
 
@@ -388,9 +438,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
 
     if (document.querySelector("#following")){
-        document.querySelector("#following").onclick = load_follows_posts;
+        document.querySelector("#following").addEventListener('click', () => load_follows_posts(1));
     }
     
-    load_posts();
+    load_all_posts(1);
 
 });

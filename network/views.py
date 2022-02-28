@@ -1,5 +1,6 @@
 import email
 from re import X
+from urllib import response
 from urllib.request import Request
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -7,6 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import JsonResponse
+from math import ceil
 
 import json
 
@@ -100,27 +102,50 @@ def post(request):
 
 
 
-def all_posts(request):
+def all_posts(request, page_number):
 
     if request.method == "GET":
-        posts = Post.objects.filter()
-        return JsonResponse([post.serialize() for post in posts], safe=False)
+        posts = Post.objects.all().order_by('-pk')
+
+        p_per_page = 5
+
+        page = [post.serialize() for post in posts][page_number*p_per_page - p_per_page : page_number*p_per_page] 
+
+        max_pages = ceil(len(posts) / p_per_page)
+
+        response = {
+            "max_pages": max_pages,
+            "posts": page
+        }
+
+        return JsonResponse(response, safe=False)
 
     else:
         return JsonResponse({"error": "GET request required."}, status=400)
 
 
-def follows_posts(request):
+def follows_posts(request, page_number):
 
     if request.method == "GET":
+
+            p_per_page = 3
 
             user = User.objects.get(pk=request.user.id)
 
             follows  = [object.followed_user for object in user.follows.all()]
 
-            posts = Post.objects.filter(owner__in = follows)
+            posts = Post.objects.filter(owner__in = follows).order_by('-pk')
 
-            return JsonResponse([post.serialize() for post in posts], safe=False)
+            page = [post.serialize() for post in posts][page_number*p_per_page - p_per_page : page_number*p_per_page] 
+
+            max_pages = ceil(len(posts) / p_per_page)
+
+            response = {
+                "max_pages": max_pages,
+                "posts": page
+            }
+
+            return JsonResponse(response, safe=False)
 
     else:
         return JsonResponse({"error": "GET request required."}, status=400)
