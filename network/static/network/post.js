@@ -37,17 +37,21 @@ function post(){
     .then(response => response.json())
     .then(post =>{
 
-        show_post(post);
+        if (post.id){
+            show_post(post);
+        }
+        
         content.value = '';
     });
 
     return false;
-
 }
 
 function show_post(post){
 
     var imageURL = "{% static 'network/likes.png' %}";
+
+    logged_user = document.getElementById('user_username');
 
     const post_container = document.createElement('div');
     post_container.classList.add("post_container");
@@ -76,7 +80,7 @@ function show_post(post){
     likes.innerText = post.likes + " ";
 
 
-    if(post.owner == document.getElementById('user_username').innerText){
+    if(logged_user && post.owner == logged_user.innerText){
         const edit_button = document.createElement('button');
         edit_button.innerText = "Edit";
         edit_button.classList.add('button-30');
@@ -116,9 +120,9 @@ function show_post(post){
     likes_container.appendChild(likes);
     
     
-    document.querySelector('#all_posts-view').append(post_container);
+    document.querySelector('#all_posts-view').prepend(post_container);
 
-    post_user.addEventListener('click', () => load_profile(post.owner));
+    post_user.addEventListener('click', () => load_profile(post.owner, 1)); // 1 is the first page of posts of the user
 
 }
 
@@ -159,6 +163,7 @@ function load_all_posts(page_number){
 
         response["posts"].forEach(post => {
             show_post(post);
+            
         });
         
         create_paginator(response["max_pages"], page_number, load_all_posts);
@@ -186,6 +191,58 @@ function load_follows_posts(page_number){
 
 }
 
+
+function load_profile(username, page_number){
+
+    const all_posts = document.querySelector('#all_posts-view');
+    const new_post = document.querySelector('#new_post');
+    const profile_view = document.querySelector('#profile-view');
+
+    all_posts.innerHTML = "";
+
+    if (new_post) {
+        new_post.innerHTML = "";
+    }
+    
+    profile_view.innerHTML = "";
+
+
+
+    fetch(`user_info/${username}`)
+    .then(response => response.json())
+    .then( user_info =>{
+        show_profile(user_info);
+    })
+    .then( ()=>{
+        // 1 porque quiero la primera página.
+        load_user_posts(1);
+    })
+
+    
+
+}
+
+
+function load_user_posts(page_number){
+
+    document.querySelector('#all_posts-view').innerHTML = "";
+
+    let username = document.getElementById("profile_username").innerText;
+
+    fetch(`user_posts/${username}/${page_number}`)
+    .then(response => response.json())
+    .then( response =>{
+        
+        response.posts.forEach( post =>{
+            show_post(post);
+        })
+        console.log(`LA RESPUESTA ES ${response.max_pages}`);
+
+        create_paginator(response["max_pages"], page_number, load_user_posts);
+    })
+
+
+}
 
 function create_paginator(max_pages, page_number, load_function){
 
@@ -227,33 +284,6 @@ function create_paginator(max_pages, page_number, load_function){
     }
     
     document.querySelector('#all_posts-view').appendChild(paginator);
-}
-
-
-function load_profile(username){
-
-    const all_posts = document.querySelector('#all_posts-view');
-    const new_post = document.querySelector('#new_post');
-    const profile_view = document.querySelector('#profile-view');
-
-    all_posts.innerHTML = "";
-
-    if (new_post) {
-        new_post.innerHTML = "";
-    }
-    
-    profile_view.innerHTML = "";
-
-    fetch(`user_info/${username}`)
-    .then(response => response.json())
-    .then( user_info =>{
-
-        user_info[1].forEach(post =>{
-            show_post(post);
-        })
-        show_profile(user_info[0]);
-    })
-
 }
 
 
@@ -316,7 +346,7 @@ function show_profile(user_info){
 
     profile = document.createElement("div");
     profile.classList.add("profile");
-    profile.classList.add("twelve");
+    //profile.classList.add("twelve");
 
     const username = document.createElement('h3');
     const follows = document.createElement('div');
@@ -326,21 +356,22 @@ function show_profile(user_info){
     
 
     followers.id = 'followers';
-
     username.innerText = user_info.username;
+    username.id = "profile_username";
     followers.innerText = `Followers: ${user_info.followers.length}`;
     follows.innerText =`Follows: ${user_info.follows.length}`;
     message.innerText = `${user_info.username} posts:`;
 
+    message.classList.add("button-30");
+
     const follow_button = document.createElement('button');
     follow_button.classList.add('follow');
-
+    follow_button.classList.add('button-30');
 
     profile.appendChild(username);
     profile.appendChild(follows);
     profile.appendChild(followers);
     
-
     profile_view.appendChild(profile);
     profile_view.appendChild(hr);
     profile_view.appendChild(message);

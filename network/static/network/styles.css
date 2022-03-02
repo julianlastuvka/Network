@@ -7,17 +7,38 @@ textarea {
   }
 
 .rainbow-text {
-    
     background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);   
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 30px;
-      
+    -webkit-text-fill-color: transparent; 
+}
+
+.logo img{
+    width: 160px;
+}
+
+
+.navbar div ul{
+    display: flexbox;
+    flex-direction: row !important;
 }
 
 #new_post, #profile-view{
     margin: 25px;
 }
+
+#profile-view h5{
+    width: 15%;
+    text-align: center;
+    line-height: 1.3;
+}
+
+
+.nav-link{
+    box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 3px 4px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;   
+     margin-right: 15px;
+     border-radius: 10px;
+     box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.1em 0.3em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;}
+
 
 .post_container{
     margin: 20px;
@@ -56,20 +77,32 @@ textarea {
 
 
 .profile{
-    background-color: rgba(100, 148, 237, 0.199);
-    margin: 20px;
+
+    background-image: linear-gradient( 103.3deg,  rgba(252, 225, 208, 0.808) 30%, rgba(255, 173, 214, 0.658) 55.7%, rgba(162, 186, 245, 0.459) 81.8% );
+    margin-bottom: 30px;
     padding: 10px;
     border-radius: 5px;
     width: 30%;
+    margin-left: 12.5%;
     text-align: center;
     align-self: center;
     font-family: Monospace;
-    box-shadow: 0 .75rem 3rem rgba(78, 129, 177, 0.315);
+    /* box-shadow: 0 .75rem 3rem rgba(78, 129, 177, 0.315); */
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
 }
 
-.profile h3{
-    text-shadow: 2px 2px 5px rgba(45, 104, 180, 0.678);
+.profile h3, .profile div{
+    text-shadow: 4px 4px 5px rgba(251, 251, 252, 0.877);
 }
+
+.profile{
+    font-size: larger;
+}
+
+.profile div{
+    margin: 5px;
+}
+
 
 .post_container h5{
     cursor: pointer;
@@ -81,7 +114,6 @@ textarea {
     justify-content: space-between;
     width: 35px;
     font-size: 110%;
-
     position: absolute;
     bottom: 5px;
 }
@@ -100,6 +132,7 @@ textarea {
     display: flex;
     padding: 10px;
     padding-bottom:25px;
+    padding-top: 0;
     width: 25%;
     justify-content: space-around;
 }
@@ -132,7 +165,6 @@ textarea{
     cursor: pointer;
     font-family: "JetBrains Mono",monospace;
     height: 30px;
-    line-height: 1;
     padding-left: 16px;
     padding-right: 16px;
     text-align: left;
@@ -143,7 +175,7 @@ textarea{
     touch-action: manipulation;
     white-space: nowrap;
     will-change: box-shadow,transform;
-    font-size: 18px;
+    line-height: 1;
 }
 
 .post_container .button-30{
@@ -206,6 +238,7 @@ textarea{
     color: #fff;
 }
 
+
   
 
 .post_container p{
@@ -219,18 +252,49 @@ textarea{
 
 @media screen and (max-width: 1100px){
 
-    * {
-        font-size: 25px;
+    .logo img{
+        width: 200px;
+    }
+
+    #new_post h4{
+        font-size: 50px;
+    }
+
+    #new_post textarea{
+        font-size: 40px;
+    }
+
+    #profile-view h5{
+        width: 40%;
+    }
+
+    .profile{
+        width: 65%;
+        margin-left: 17.5%;
+    }
+
+    .profile h3{
+        font-size: 50px;
+    }
+
+    .profile div{
+        font-size: 40px;
+    }
+
+    .nav-item a, .nav-item a strong{
+        padding-right: 15px!important;
+        padding-left: 15px!important;
+        font-size: 32px;
     }
 
     .post_container{
         width: 95%;
         padding-bottom: 50px;
-        padding-top: 50px;
+        padding-top: 20px;
     }
 
     .post_container p, .post_container h5{
-        font-size: 35px;
+        font-size: 40px;
     }
 
     #new_post textarea{
@@ -238,9 +302,18 @@ textarea{
         margin-left: 10px;
     }
 
+    #paginator{
+        width: 75%;
+        margin-left: 12.5%;
+    }
+
+    #paginator button{
+        font-size: 35px;
+    }
+
     .button-30{
-        font-size: 32px;
-        height: 45px;
+        font-size: 40px;
+        height: 55px;
     }
 
     .post_container .timestamp{
@@ -249,12 +322,14 @@ textarea{
     
 
     .likes_container{
-        
         width: 48px;
-        font-size: 110%;
         position: absolute;
         bottom: 5px;
         left: 20px;
+    }
+
+    .likes_container div{
+        font-size: 25px;
     }
     
     .likes_icon{

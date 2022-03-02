@@ -1,5 +1,6 @@
 import email
 from re import X
+from tracemalloc import start
 from urllib import response
 from urllib.request import Request
 from django.contrib.auth import authenticate, login, logout
@@ -82,7 +83,7 @@ def post(request):
 
         data = json.loads(request.body)
 
-        if data.get("content") is not None:
+        if data.get("content"):
 
             new_post = Post(
             owner = request.user,
@@ -105,17 +106,18 @@ def post(request):
 def all_posts(request, page_number):
 
     if request.method == "GET":
-        posts = Post.objects.all().order_by('-pk')
+        posts = Post.objects.all()
 
-        p_per_page = 5
-
-        page = [post.serialize() for post in posts][page_number*p_per_page - p_per_page : page_number*p_per_page] 
-
+        p_per_page = 10
         max_pages = ceil(len(posts) / p_per_page)
-
+        end = len(posts) - ((page_number-1)*p_per_page)
+        start = end - p_per_page if end >= p_per_page else 0
+                                                    
+        posts = [post.serialize() for post in posts][start:end] 
+        
         response = {
             "max_pages": max_pages,
-            "posts": page
+            "posts": posts
         }
 
         return JsonResponse(response, safe=False)
@@ -128,21 +130,21 @@ def follows_posts(request, page_number):
 
     if request.method == "GET":
 
-            p_per_page = 3
+            p_per_page = 10
 
             user = User.objects.get(pk=request.user.id)
-
             follows  = [object.followed_user for object in user.follows.all()]
-
-            posts = Post.objects.filter(owner__in = follows).order_by('-pk')
-
-            page = [post.serialize() for post in posts][page_number*p_per_page - p_per_page : page_number*p_per_page] 
+            posts = Post.objects.filter(owner__in = follows).order_by("pk")
 
             max_pages = ceil(len(posts) / p_per_page)
+            end = len(posts) - ((page_number-1)*p_per_page)
+            start = end - p_per_page if end >= p_per_page else 0
+
+            posts = [post.serialize() for post in posts][start : end] 
 
             response = {
                 "max_pages": max_pages,
-                "posts": page
+                "posts": posts
             }
 
             return JsonResponse(response, safe=False)
@@ -193,18 +195,36 @@ def user_info(request, username):
 
         user = User.objects.get(username= username)
 
-        user_posts = Post.objects.filter(owner = user)
-
-        user_posts = [post.serialize() for post in user_posts]
-
         user_info = {
             "username": user.username,
             "follows": [object.followed_user.username for object in user.follows.all()],
-            "followers": [object.user.username for object in user.followers.all()]
+            "followers": [object.user.username for object in user.followers.all()],
         }
 
-        return  JsonResponse([user_info, user_posts], safe=False)
+        return  JsonResponse(user_info, safe=False)
 
+
+
+def user_posts(request, username, page_number):
+
+    if request.method == "GET":
+
+        user = User.objects.get(username= username)
+        posts = Post.objects.filter(owner = user)
+
+        p_per_page = 10
+        max_pages = ceil(len(posts) / p_per_page)
+        end = len(posts) - ((page_number-1)*p_per_page)
+        start = end - p_per_page if end >= p_per_page else 0
+
+        posts = [post.serialize() for post in posts][start : end]
+
+        user_posts = {
+            "posts": posts,
+            "max_pages": max_pages
+        }
+
+        return  JsonResponse(user_posts, safe=False)
 
 
 def like_post(request):
